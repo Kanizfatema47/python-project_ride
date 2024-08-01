@@ -7,6 +7,15 @@ class Ride_Sharing:
         self.riders =[]
         self.drivers =[]
         self.rides =[]
+        
+    def add_rider(self, rider):
+        self.riders.append(rider)
+        
+    def add_driver(self, driver):
+        self.drivers.append(driver)
+    
+    def __repr__(self) -> str:
+        return(f'{self.company_name} with riders: {len(self.riders)} and drivers: {len(self.drivers)}')
 
 
 
@@ -40,12 +49,17 @@ class Rider(User):
         self.current_location = current_location
             
                 
-    def request_ride(self,destination):
+    def request_ride(self,ride_sharing,destination):
         if not self.current_ride:
+            print('looking for a ride')
             ride_request=Ride_Request(self, destination)
-            ride_matcher= Ride_Matching()
-            self.current_ride = ride_matcher.find_driver(ride_request)
-            
+            ride_matcher= Ride_Matching(ride_sharing.drivers)
+            ride = ride_matcher.find_driver(ride_request)
+            print('got the ride')
+            self.current_ride =ride
+    def show_current_ride(self):
+        print(self.current_ride)
+                    
             
 class Driver(User):
     def __init__(self, name, email, nid, current_location) -> None:
@@ -79,6 +93,9 @@ class Ride:
         self.end_time = datetime.now()
         self.rider.wallet -= self.estimated_fare
         self.driver.wallet += self.estimated_fare
+        
+    def __repr__(self) -> str:
+        return f'Ride Details: started from:{self.start_location} to {self.end_location}'
 
 
 class Ride_Request:
@@ -88,8 +105,8 @@ class Ride_Request:
         
         
 class Ride_Matching:
-    def __init__(self) -> None:
-        self.available_drivers = []
+    def __init__(self, drivers) -> None:
+        self.available_drivers = drivers
     
     def find_driver(self, ride_request):
         if len(self.available_drivers)> 0:
@@ -143,8 +160,21 @@ class CNG(Vehicle):
         self.status = 'unavialable'  
     
         
-        
-        
+#check the class integration
+
+niye_jao = Ride_Sharing('Niye Jao')
+
+rahim_rider = Rider('Rahim', 'rahim@gmail.com', 12345, 'mohakhali', 500)
+niye_jao.add_rider(rahim_rider)
+
+karim_driver = Driver('Karim', 'karim@gmail.com', 123456, 'gulshan-1')
+niye_jao.add_driver(karim_driver)
+
+rahim_rider.request_ride(niye_jao,'Uttara')
+rahim_rider.show_current_ride()
+
+print(niye_jao)
+   
         
 
         
